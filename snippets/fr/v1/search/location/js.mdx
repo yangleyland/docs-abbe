@@ -1,0 +1,19 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+// Initialisez le client avec votre clé API
+const app = new Firecrawl({apiKey: "fc-YOUR_API_KEY"});
+
+// Recherche avec des paramètres de localisation (Allemagne)
+app.search("web scraping tools", {
+  limit: 5,
+  location: "Germany"
+})
+.then(searchResult => {
+  // Traitez les résultats
+  searchResult.data.forEach(result => {
+    console.log(`Title: ${result.title}`);
+    console.log(`URL: ${result.url}`);
+  });
+}); 
+```

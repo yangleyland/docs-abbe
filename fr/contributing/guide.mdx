@@ -1,0 +1,183 @@
+---
+title: "Exécuter en local"
+description: "Configurer Firecrawl sur votre machine locale pour le développement et la contribution."
+og:title: "Exécuter en local | Firecrawl"
+og:description: "Configurer Firecrawl sur votre machine locale pour le développement et la contribution."
+sidebarTitle: "Exécuter en local"
+---
+
+Ce guide vous explique comment exécuter le serveur d'API Firecrawl sur votre machine locale. Suivez ces étapes pour configurer l'environnement de développement, démarrer les services et envoyer votre première requête.
+
+Si vous contribuez au projet, le processus suit les conventions standard de l'open source : faites un fork du dépôt, apportez vos modifications, exécutez les tests, puis ouvrez une pull request. Pour toute question ou pour obtenir de l'aide pour démarrer, contactez help@firecrawl.com ou [soumettez une issue](https://github.com/mendableai/firecrawl/issues).
+
+<div id="prerequisites">
+  ## Prérequis
+</div>
+
+Installez les éléments suivants avant de continuer :
+
+| Dépendance | Obligatoire | Guide d'installation |
+|------------|-------------|----------------------|
+| Node.js | Oui | [nodejs.org](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) |
+| pnpm (v9+) | Oui | [pnpm.io](https://pnpm.io/installation) |
+| Redis | Oui | [redis.io](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/) |
+| PostgreSQL | Oui | Via Docker (voir ci-dessous) ou installation directe |
+| Docker | Facultatif | Nécessaire pour configurer le conteneur PostgreSQL |
+
+<div id="set-up-the-database">
+  ## Configurer la base de données
+</div>
+
+Vous devez disposer d’une base de données PostgreSQL initialisée avec le schéma situé à `apps/nuq-postgres/nuq.sql`. Le moyen le plus simple consiste à utiliser l’image Docker dans `apps/nuq-postgres`.
+
+Une fois Docker lancé, construisez et démarrez le conteneur :
+
+```bash
+docker build -t nuq-postgres apps/nuq-postgres
+```
+
+```bash
+docker run --name nuqdb \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5433:5432 \
+  -v nuq-data:/var/lib/postgresql/data \
+  -d nuq-postgres
+```
+
+
+<div id="configure-environment-variables">
+  ## Configurer les variables d&#39;environnement
+</div>
+
+Copiez le modèle suivant pour créer votre fichier `.env` dans le répertoire `apps/api/` :
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+Pour une configuration locale minimale sans authentification ni services optionnels (analyse de PDF, blocage de JS, fonctionnalités d’IA), utilisez la configuration suivante :
+
+```bash apps/api/.env
+# ===== Requis =====
+NUM_WORKERS_PER_QUEUE=8
+PORT=3002
+HOST=0.0.0.0
+REDIS_URL=redis://localhost:6379
+REDIS_RATE_LIMIT_URL=redis://localhost:6379
+
+## Pour activer l'authentification DB, vous devez configurer supabase.
+USE_DB_AUTHENTICATION=false
+
+## Connexion PostgreSQL pour la file d'attente — à modifier si les identifiants, l'hôte ou la base de données diffèrent
+NUQ_DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres
+
+# ===== Optionnel =====
+# SUPABASE_ANON_TOKEN=
+# SUPABASE_URL=
+# SUPABASE_SERVICE_TOKEN=
+# TEST_API_KEY=               # À définir si vous avez configuré l'authentification et souhaitez tester avec une vraie clé API
+# OPENAI_API_KEY=             # Requis pour les fonctionnalités dépendant des LLM (génération d'attributs alt d'image, etc.)
+# BULL_AUTH_KEY=@
+# PLAYWRIGHT_MICROSERVICE_URL= # À définir pour utiliser un fallback Playwright
+# LLAMAPARSE_API_KEY=         # À définir pour analyser les PDF avec LlamaParse
+# SLACK_WEBHOOK_URL=          # À définir pour envoyer des messages d'état du serveur sur Slack
+# POSTHOG_API_KEY=            # À définir pour envoyer des événements PostHog comme les journaux de tâches
+# POSTHOG_HOST=               # À définir pour envoyer des événements PostHog comme les journaux de tâches
+```
+
+
+<div id="install-dependencies">
+  ## Installer les dépendances
+</div>
+
+Depuis le répertoire `apps/api/`, installez les packages avec pnpm :
+
+```bash
+cd apps/api
+pnpm install
+```
+
+
+<div id="start-the-services">
+  ## Démarrer les services
+</div>
+
+Vous avez besoin de trois sessions de terminal ouvertes simultanément : Redis, le serveur d'API et un terminal pour envoyer des requêtes.
+
+<div id="terminal-1-setting-up-redis">
+  ### Terminal 1 — Redis
+</div>
+
+Démarrez le serveur Redis depuis n’importe où dans le projet :
+
+```bash
+redis-server
+```
+
+
+<div id="terminal-2-api-server">
+  ### Terminal 2 — Serveur API
+</div>
+
+Placez-vous dans `apps/api/` puis démarrez le service :
+
+```bash
+pnpm start
+```
+
+Cela démarre le serveur API et les workers responsables du traitement des jobs de crawl.
+
+<Note>
+  Si vous prévoyez d&#39;utiliser la [fonctionnalité d&#39;extraction LLM](https://github.com/firecrawl/firecrawl/pull/586/), exportez d&#39;abord votre clé d&#39;API OpenAI : `export OPENAI_API_KEY=sk-...`
+</Note>
+
+
+<div id="terminal-3-send-a-test-request">
+  ### Terminal 3 — Envoyer une requête de test
+</div>
+
+Vérifiez que le serveur est en cours d’exécution avec un « health check » :
+
+```bash
+curl -X GET http://localhost:3002/test
+```
+
+Cela devrait renvoyer `Hello, world!`.
+
+Pour tester l’endpoint de crawl :
+
+```bash
+curl -X POST http://localhost:3002/v1/crawl \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://mendable.ai"
+  }'
+```
+
+
+<div id="alternative-docker-compose">
+  ## Alternative : Docker Compose
+</div>
+
+Pour une mise en place plus simple, Docker Compose exécute tous les services (Redis, serveur d’API et workers) avec une seule commande.
+
+1. Assurez-vous que Docker et Docker Compose sont installés.
+2. Copiez `.env.example` vers `.env` dans le répertoire `apps/api/` et configurez-le selon vos besoins.
+3. Depuis la racine du projet, exécutez :
+
+```bash
+docker compose up
+```
+
+Cela lance automatiquement tous les services avec la configuration adéquate.
+
+
+<div id="running-tests">
+  ## Exécuter les tests
+</div>
+
+Exécutez la suite de tests avec :
+
+```bash
+npm run test:snips
+```

@@ -1,0 +1,183 @@
+---
+title: "ローカル環境での実行"
+description: "開発やコントリビュートのために、ローカル環境で Firecrawl をセットアップします。"
+og:title: "Running Locally | Firecrawl"
+og:description: "開発やコントリビュートのために、ローカル環境で Firecrawl をセットアップします。"
+sidebarTitle: "ローカル環境での実行"
+---
+
+このガイドでは、ローカル環境で Firecrawl API サーバーを実行する手順を説明します。以下のステップに従って、開発環境をセットアップし、サービスを起動し、最初のリクエストを送信してみてください。
+
+Firecrawl にコントリビュートする場合、プロセスは一般的なオープンソースの慣習に従います。リポジトリをフォークし、変更を加え、テストを実行し、プルリクエストを送信してください。質問やセットアップのサポートが必要な場合は help@firecrawl.com までお問い合わせいただくか、[issue を作成](https://github.com/mendableai/firecrawl/issues)してください。
+
+<div id="prerequisites">
+  ## 前提条件
+</div>
+
+続行する前に、次をインストールしてください：
+
+| 依存関係 | 必須 | インストールガイド |
+|------------|----------|---------------|
+| Node.js | はい | [nodejs.org](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) |
+| pnpm (v9+) | はい | [pnpm.io](https://pnpm.io/installation) |
+| Redis | はい | [redis.io](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/) |
+| PostgreSQL | はい | Docker 経由（下記参照）またはローカルに直接インストール |
+| Docker | 任意 | PostgreSQL コンテナ環境のセットアップに必要 |
+
+<div id="set-up-the-database">
+  ## データベースをセットアップする
+</div>
+
+`apps/nuq-postgres/nuq.sql` のスキーマで初期化された PostgreSQL データベースが必要です。最も簡単な方法は、`apps/nuq-postgres` 内の Docker イメージを使用することです。
+
+Docker を起動した状態で、イメージをビルドしてコンテナを起動します：
+
+```bash
+docker build -t nuq-postgres apps/nuq-postgres
+```
+
+```bash
+docker run --name nuqdb \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5433:5432 \
+  -v nuq-data:/var/lib/postgresql/data \
+  -d nuq-postgres
+```
+
+
+<div id="configure-environment-variables">
+  ## 環境変数を設定する
+</div>
+
+テンプレートをコピーして、`apps/api/` ディレクトリ内に `.env` ファイルを作成します。
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+認証やオプションのサブサービス（PDF 解析、JS ブロック、AI 機能）を使わない最小限のローカルセットアップには、次の設定を使用します：
+
+```bash apps/api/.env
+# ===== 必須 =====
+NUM_WORKERS_PER_QUEUE=8
+PORT=3002
+HOST=0.0.0.0
+REDIS_URL=redis://localhost:6379
+REDIS_RATE_LIMIT_URL=redis://localhost:6379
+
+## DB認証を有効にするには、supabaseをセットアップする必要があります。
+USE_DB_AUTHENTICATION=false
+
+## キューイング用のPostgreSQL接続 — 認証情報、ホスト、またはDBが異なる場合は変更してください
+NUQ_DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres
+
+# ===== オプション =====
+# SUPABASE_ANON_TOKEN=
+# SUPABASE_URL=
+# SUPABASE_SERVICE_TOKEN=
+# TEST_API_KEY=               # 認証を設定済みで実際のAPIキーでテストしたい場合に設定
+# OPENAI_API_KEY=             # LLM依存機能（画像alt生成など）に必要
+# BULL_AUTH_KEY=@
+# PLAYWRIGHT_MICROSERVICE_URL= # Playwrightフォールバックを実行する場合に設定
+# LLAMAPARSE_API_KEY=         # LlamaParseでPDFを解析する場合に設定
+# SLACK_WEBHOOK_URL=          # Slackにサーバーのヘルスステータスメッセージを送信する場合に設定
+# POSTHOG_API_KEY=            # ジョブログなどのPostHogイベントを送信する場合に設定
+# POSTHOG_HOST=               # ジョブログなどのPostHogイベントを送信する場合に設定
+```
+
+
+<div id="install-dependencies">
+  ## 依存関係をインストールする
+</div>
+
+`apps/api/` ディレクトリで pnpm を使ってパッケージをインストールします。
+
+```bash
+cd apps/api
+pnpm install
+```
+
+
+<div id="start-the-services">
+  ## サービスを起動する
+</div>
+
+Redis、API サーバー、リクエスト送信用のターミナルの 3 つのターミナルセッションを同時に起動しておく必要があります。
+
+<div id="terminal-1-setting-up-redis">
+  ### ターミナル 1 — Redis
+</div>
+
+プロジェクト内の任意のディレクトリから Redis サーバーを起動します:
+
+```bash
+redis-server
+```
+
+
+<div id="terminal-2-api-server">
+  ### Terminal 2 — API サーバー
+</div>
+
+`apps/api/` ディレクトリに移動し、サービスを起動します：
+
+```bash
+pnpm start
+```
+
+これにより、API サーバーとクロールジョブの処理を担当するワーカーが起動されます。
+
+<Note>
+  [LLM extract 機能](https://github.com/firecrawl/firecrawl/pull/586/)を利用する場合は、先に OpenAI API キーをエクスポートしてください: `export OPENAI_API_KEY=sk-...`
+</Note>
+
+
+<div id="terminal-3-send-a-test-request">
+  ### ターミナル 3 — テストリクエストを送信する
+</div>
+
+サーバーが正常に起動しているか、ヘルスチェックで確認します。
+
+```bash
+curl -X GET http://localhost:3002/test
+```
+
+これで `Hello, world!` というレスポンスが返ってくれば OK です。
+
+`crawl` エンドポイントをテストするには:
+
+```bash
+curl -X POST http://localhost:3002/v1/crawl \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://mendable.ai"
+  }'
+```
+
+
+<div id="alternative-docker-compose">
+  ## 代替案：Docker Compose
+</div>
+
+よりシンプルなセットアップを行うには、Docker Compose を使うことで、すべてのサービス（Redis、API サーバー、ワーカー）を 1 つのコマンドで実行できます。
+
+1. Docker と Docker Compose がインストールされていることを確認します。
+2. `apps/api/` ディレクトリ内で `.env.example` を `.env` にコピーし、必要に応じて設定します。
+3. プロジェクトルートから次を実行します：
+
+```bash
+docker compose up
+```
+
+これにより、すべてのサービスが正しい構成で自動的に起動されます。
+
+
+<div id="running-tests">
+  ## テストの実行
+</div>
+
+テストスイートを実行するには、次のコマンドを実行します：
+
+```bash
+npm run test:snips
+```

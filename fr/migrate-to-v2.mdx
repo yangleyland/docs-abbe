@@ -1,0 +1,284 @@
+---
+title: Migration v1 → v2
+description: "Principales modifications, correspondances et exemples avant/après pour mettre à niveau votre intégration vers la v2."
+og:title: "Migration v1 → v2 | Firecrawl"
+og:description: "Principales modifications, correspondances et exemples avant/après pour mettre à niveau votre intégration vers la v2."
+---
+
+<div id="overview">
+  ## Présentation
+</div>
+
+<div id="key-improvements">
+  ### Améliorations clés
+</div>
+
+- **Plus rapide par défaut** : Les requêtes sont mises en cache avec `maxAge` fixé par défaut à 2 jours, et des paramètres pertinents comme `blockAds`, `skipTlsVerification` et `removeBase64Images` sont activés.
+
+- **Nouveau format de résumé** : Vous pouvez désormais indiquer `"summary"` comme format pour recevoir directement un résumé concis du contenu de la page.
+
+- **Extraction JSON mise à jour** : L’extraction JSON et le suivi des modifications utilisent désormais un format objet : `{ type: "json", prompt, schema }`. L’ancien format `"extract"` a été renommé en `"json"`.
+
+- **Options de capture d’écran améliorées** : Utilisez la forme objet : `{ type: "screenshot", fullPage, quality, viewport }`.
+
+- **Nouvelles sources de recherche** : Recherchez dans `"news"` et `"images"`, en plus des résultats web, en définissant le paramètre `sources`.
+
+- **Crawl intelligent avec prompts** : Fournissez un `prompt` en langage naturel au crawl et le système déduira automatiquement les chemins/limites. Utilisez le nouveau point de terminaison /crawl/params-preview pour prévisualiser les options dérivées avant de lancer un job.
+
+<div id="quick-migration-checklist">
+  ## Liste de contrôle de migration rapide
+</div>
+
+- Remplacez l’utilisation du client v1 par les clients v2 :
+  - JS : `const firecrawl = new Firecrawl({ apiKey: 'fc-YOUR-API-KEY' })`
+  - Python : `firecrawl = Firecrawl(api_key='fc-YOUR-API-KEY')`
+  - API : utilisez les nouveaux points de terminaison `https://api.firecrawl.dev/v2/`.
+- Mettez à jour les formats :
+  - Utilisez `"summary"` si nécessaire
+  - Mode JSON : utilisez `{ type: "json", prompt, schema }` pour l’extraction JSON
+  - Screenshot et Screenshot@fullPage : utilisez le format d’objet screenshot lors de la définition des options
+- Adoptez des flux asynchrones standardisés dans les SDK :
+  - Crawls : `startCrawl` + `getCrawlStatus` (ou waiter `crawl`)
+  - Batch : `startBatchScrape` + `getBatchScrapeStatus` (ou waiter `batchScrape`)
+  - Extract : `startExtract` + `getExtractStatus` (ou waiter `extract`)
+- Correspondance des options de crawl (voir ci-dessous)
+- Vérifiez le `prompt` du crawl avec `/crawl/params-preview`
+
+<div id="sdk-surface-v2">
+  ## Surface du SDK (v2)
+</div>
+
+<div id="jsts">
+  ### JS/TS
+</div>
+
+#### Changements de noms de méthodes (migration v1 → v2)
+
+**Scrape, Search et Map**
+
+| v1 (Firecrawl)        | v2 (Firecrawl)            |
+| --------------------- | ------------------------- |
+| `scrapeUrl(url, ...)` | `scrape(url, options?)`   |
+| `search(query, ...)`  | `search(query, options?)` |
+| `mapUrl(url, ...)`    | `map(url, options?)`      |
+
+**Crawling**
+
+| v1                          | v2                              |
+| --------------------------- | ------------------------------- |
+| `crawlUrl(url, ...)`        | `crawl(url, options?)` (waiter) |
+| `asyncCrawlUrl(url, ...)`   | `startCrawl(url, options?)`     |
+| `checkCrawlStatus(id, ...)` | `getCrawlStatus(id)`            |
+| `cancelCrawl(id)`           | `cancelCrawl(id)`               |
+| `checkCrawlErrors(id)`      | `getCrawlErrors(id)`            |
+
+**Batch Scraping**
+
+| v1                                | v2                                  |
+| --------------------------------- | ----------------------------------- |
+| `batchScrapeUrls(urls, ...)`      | `batchScrape(urls, opts?)` (waiter) |
+| `asyncBatchScrapeUrls(urls, ...)` | `startBatchScrape(urls, opts?)`     |
+| `checkBatchScrapeStatus(id, ...)` | `getBatchScrapeStatus(id)`          |
+| `checkBatchScrapeErrors(id)`      | `getBatchScrapeErrors(id)`          |
+
+**Extraction**
+
+| v1                            | v2                     |
+| ----------------------------- | ---------------------- |
+| `extract(urls?, params?)`     | `extract(args)`        |
+| `asyncExtract(urls, params?)` | `startExtract(args)`   |
+| `getExtractStatus(id)`        | `getExtractStatus(id)` |
+
+**Autres / Supprimés**
+
+| v1                                | v2                          |
+| --------------------------------- | --------------------------- |
+| `generateLLMsText(...)`           | (non inclus dans le SDK v2) |
+| `checkGenerateLLMsTextStatus(id)` | (non inclus dans le SDK v2) |
+| `crawlUrlAndWatch(...)`           | `watcher(jobId, ...)`       |
+| `batchScrapeUrlsAndWatch(...)`    | `watcher(jobId, ...)`       |
+
+***
+
+<div id="python-sync">
+  ### Python (synchrones)
+</div>
+
+<div id="method-name-changes-v1-v2">
+  #### Changements de noms de méthodes (migration v1 → v2)
+</div>
+
+**Scrape, Search et Map**
+
+| v1                | v2             |
+|-------------------|----------------|
+| `scrape_url(...)` | `scrape(...)`  |
+| `search(...)`     | `search(...)`  |
+| `map_url(...)`    | `map(...)`     |
+
+**Crawling**
+
+| v1                      | v2                    |
+|-------------------------|-----------------------|
+| `crawl_url(...)`        | `crawl(...)` (waiter) |
+| `async_crawl_url(...)`  | `start_crawl(...)`    |
+| `check_crawl_status(...)` | `get_crawl_status(...)` |
+| `cancel_crawl(...)`     | `cancel_crawl(...)`   |
+
+**Batch Scraping**
+
+| v1                           | v2                           |
+|------------------------------|------------------------------|
+| `batch_scrape_urls(...)`     | `batch_scrape(...)` (waiter) |
+| `async_batch_scrape_urls(...)` | `start_batch_scrape(...)`   |
+| `get_batch_scrape_status(...)` | `get_batch_scrape_status(...)` |
+| `get_batch_scrape_errors(...)` | `get_batch_scrape_errors(...)` |
+
+**Extraction**
+
+| v1                | v2                |
+|-------------------|-------------------|
+| `extract(...)`    | `extract(...)`    |
+| `start_extract(...)` | `start_extract(...)` |
+| `get_extract_status(...)` | `get_extract_status(...)` |
+
+**Autres / Supprimées**
+
+| v1                              | v2                |
+|---------------------------------|-------------------|
+| `generate_llms_text(...)`       | (absent du SDK v2)   |
+| `get_generate_llms_text_status(...)` | (absent du SDK v2) |
+| `watch_crawl(...)`              | `watcher(job_id, ...)` |
+
+---
+
+<div id="python-async">
+  ### Python (asynchrone)
+</div>
+
+- `AsyncFirecrawl` propose les mêmes méthodes (toutes awaitables).
+
+<div id="formats-and-scrape-options">
+  ## Formats et options de scraping
+</div>
+
+- Utilisez des formats chaîne pour les bases : `"markdown"`, `"html"`, `"rawHtml"`, `"links"`, `"summary"`, `"images"`.
+- Au lieu de `parsePDF`, utilisez `parsers: [ { "type": "pdf" } | "pdf" ]`.
+- Utilisez des formats objet pour JSON, le suivi des modifications et les captures d’écran :
+
+<div id="json-format">
+  ### Format JSON
+</div>
+
+<CodeGroup>
+```js Node
+const formats = [ {
+  "type": "json",
+  "prompt": "Extrayez la mission de l’entreprise à partir de la page."
+}];
+
+doc = firecrawl.scrape(url, { formats });
+```
+
+```python Python
+formats = [ { "type": "json", "prompt": "Extrayez la mission de l’entreprise à partir de la page." } ];
+
+doc = firecrawl.scrape(url, formats=formats);
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v2/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev/",
+      "formats": [{
+        "type": "json",
+        "prompt": "Extrayez la mission de l’entreprise à partir de la page."
+      }]
+    }'
+```
+</CodeGroup>
+
+<div id="screenshot-format">
+  ### Format de capture d’écran
+</div>
+
+<CodeGroup>
+
+```js Node
+// Format de capture d’écran (JS)
+const formats = [ { "type": "screenshot", "fullPage": true, "quality": 80, "viewport": { "width": 1280, "height": 800 } } ];
+
+doc = firecrawl.scrape(url, { formats });
+```
+
+```python Python
+# Format de capture d’écran (Python)
+formats = [ { "type": "screenshot", "fullPage": true, "quality": 80, "viewport": { "width": 1280, "height": 800 } } ];
+doc = firecrawl.scrape(url, formats=formats);
+```
+
+```bash cURL
+# Format de capture d’écran (cURL)
+curl -X POST https://api.firecrawl.dev/v2/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev/",
+      "formats": [{
+        "type": "screenshot",
+        "fullPage": true,
+        "quality": 80,
+        "viewport": { "width": 1280, "height": 800 }
+      }]
+    }'
+```
+
+</CodeGroup>
+
+<div id="crawl-options-mapping-v1-v2">
+  ## Correspondance des options de crawl (v1 → v2)
+</div>
+
+| v1                     | v2                 |
+|------------------------|--------------------|
+| `allowBackwardCrawling`| (supprimé) utiliser `crawlEntireDomain`|
+| `maxDepth`             | (supprimé) utiliser `maxDiscoveryDepth`|
+| `ignoreSitemap` (booléen) | `sitemap` (p. ex. « only », « skip » ou « include ») |
+| (aucun) | `prompt` |
+
+<div id="crawl-prompt-params-preview">
+  ## Aperçu du prompt et des paramètres de crawl
+</div>
+
+Voir des exemples d’aperçu des paramètres de crawl :
+
+<CodeGroup>
+  ```js Node
+  import { Firecrawl } from 'firecrawl';
+
+  const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+  const params = await firecrawl.crawlParamsPreview('https://docs.firecrawl.dev', 'Extraire la doc et le blog');
+  console.log(params);
+  ```
+
+  ```python Python
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(api_key='fc-YOUR-API-KEY')
+  preview = firecrawl.crawl_params_preview(url='https://docs.firecrawl.dev', prompt='Extraire la doc et le blog')
+  print(preview)
+  ```
+
+  ```bash cURL
+  curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
+      -H 'Content-Type: application/json' \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -d '{
+        "url": "https://docs.firecrawl.dev",
+        "prompt": "Extraire la doc et le blog"
+      }'
+  ```
+</CodeGroup>

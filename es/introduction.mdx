@@ -1,0 +1,209 @@
+---
+title: Introducción
+description: "Busca en la web, haz scraping de cualquier página e interactúa con ella — todo desde una sola API."
+og:title: "Introducción | Firecrawl"
+og:description: "Busca en la web, haz scraping de cualquier página e interactúa con ella — todo desde una sola API."
+---
+
+<Note>
+  **Para agentes de IA:** Usa [llms.txt](/es/llms.txt) para obtener un índice completo de toda la documentación.
+</Note>
+
+import SearchPython from "/snippets/es/v2/search/base/python.mdx";
+import SearchNode from "/snippets/es/v2/search/base/js.mdx";
+import SearchCURL from "/snippets/es/v2/search/base/curl.mdx";
+import SearchCLI from "/snippets/es/v2/search/base/cli.mdx";
+import SearchResponse from "/snippets/es/v2/search/base/output.mdx";
+import ScrapePython from "/snippets/es/v2/scrape/base/python.mdx";
+import ScrapeNode from "/snippets/es/v2/scrape/base/js.mdx";
+import ScrapeCURL from "/snippets/es/v2/scrape/base/curl.mdx";
+import ScrapeCLI from "/snippets/es/v2/scrape/base/cli.mdx";
+import ScrapeResponse from "/snippets/es/v2/scrape/base/output.mdx";
+import InteractPython from "/snippets/es/v2/interact/quickstart/python.mdx";
+import InteractNode from "/snippets/es/v2/interact/quickstart/js.mdx";
+import InteractCURL from "/snippets/es/v2/interact/quickstart/curl.mdx";
+import InteractCLI from "/snippets/es/v2/interact/quickstart/cli.mdx";
+import InteractResponse from "/snippets/es/v2/interact/response/output.mdx";
+
+<div id="get-started">
+  ## Primeros pasos
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Obtén tu clave de API" icon="key" href="https://www.firecrawl.dev/app/api-keys">
+    Regístrate y obtén tu clave de API para empezar a utilizar Firecrawl
+  </Card>
+
+  <Card title="Pruébalo en el Playground" icon="play" href="https://www.firecrawl.dev/playground">
+    Prueba la API al instante, sin escribir código
+  </Card>
+</CardGroup>
+
+<div id="use-firecrawl-with-ai-agents-recommended">
+  ### Utiliza Firecrawl con agentes de IA (recomendado)
+</div>
+
+Las skills de Firecrawl son la forma más rápida para que los agentes descubran y utilicen Firecrawl. Sin ellas, tu agente no sabrá que Firecrawl está disponible.
+
+```bash
+npx -y firecrawl-cli@latest init --all --browser
+```
+
+<Note>
+  Reinicia el agente después de instalar las skills. Consulta [Skills + CLI](/es/sdks/cli)
+  para ver la configuración completa.
+</Note>
+
+O bien usa el [MCP Server](/es/mcp-server) para conectar Firecrawl directamente con Claude, Cursor, Windsurf, VS Code y otras herramientas de IA.
+
+***
+
+<div id="what-can-firecrawl-do">
+  ## ¿Qué puede hacer Firecrawl?
+</div>
+
+<CardGroup cols={3}>
+  <Card title="Búsqueda" icon="magnifying-glass" href="#search">
+    Buscar en la web y obtener el contenido completo de la página de los resultados
+  </Card>
+
+  <Card title="Scraping" icon="file-lines" href="#scrape">
+    Extraer contenido de cualquier URL como markdown, HTML o JSON estructurado
+  </Card>
+
+  <Card title="Interact" icon="hand-pointer" href="#interact">
+    Seguir trabajando con cualquier página obtenida mediante scraping — hacer clic, rellenar formularios y extraer contenido dinámico
+  </Card>
+</CardGroup>
+
+<div id="why-firecrawl">
+  ### ¿Por qué Firecrawl?
+</div>
+
+* **Salida lista para LLM**: Markdown limpio, JSON estructurado, capturas de pantalla y más.
+* **Se encarga de lo difícil**: Proxies, protección anti-bots, renderizado de JavaScript y contenido dinámico.
+* **Fiable**: Diseñado para producción, con alta disponibilidad y resultados consistentes.
+* **Rápido**: Resultados en segundos, optimizado para un alto rendimiento.
+* **MCP Server**: Conecta Firecrawl a cualquier herramienta de IA mediante [Model Context Protocol](/es/mcp-server).
+
+***
+
+<div id="search">
+  ## Búsqueda
+</div>
+
+Buscar en la web y obtener el contenido completo de la página de los resultados en una sola llamada. Consulta la [documentación de la función Search](/es/features/search) para ver todas las opción.
+
+<CodeGroup>
+  <SearchPython />
+
+  <SearchNode />
+
+  <SearchCURL />
+
+  <SearchCLI />
+</CodeGroup>
+
+<Accordion title="Respuesta">
+  Los SDK devolverán el objeto de datos directamente. cURL devolverá la carga útil completa.
+
+  <SearchResponse />
+</Accordion>
+
+<div id="scrape">
+  ## Scraping
+</div>
+
+Haz scraping de cualquier URL y obtén su contenido en markdown, HTML u otros formatos. Consulta la [documentación de la función Scraping](/es/features/scrape) para ver todas las opciones.
+
+<CodeGroup>
+  <ScrapePython />
+
+  <ScrapeNode />
+
+  <ScrapeCURL />
+
+  <ScrapeCLI />
+</CodeGroup>
+
+<Accordion title="Respuesta">
+  Los SDK devolverán el objeto de datos directamente. cURL devolverá la carga útil exactamente como se muestra a continuación.
+
+  <ScrapeResponse />
+</Accordion>
+
+<div id="interact">
+  ## Interact
+</div>
+
+Haz scraping de una página y luego sigue trabajando con ella — haz clic en botones, completa formularios, extrae contenido dinámico o navega más en profundidad. Describe lo que quieres en inglés sencillo o escribe código para tener control total. Consulta la [documentación de la función Interact](/es/features/interact) para ver todas las opciones.
+
+<CodeGroup>
+  <InteractPython />
+
+  <InteractNode />
+
+  <InteractCURL />
+
+  <InteractCLI />
+</CodeGroup>
+
+<Accordion title="Respuesta">
+  <InteractResponse />
+</Accordion>
+
+***
+
+<div id="more-capabilities">
+  ## Más capacidades
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/es/features/agent">
+    Recopilación autónoma de datos web impulsada por IA
+  </Card>
+
+  <Card title="Interact" icon="hand-pointer" href="/es/features/interact">
+    Haz clic, completa formularios y extrae contenido dinámico
+  </Card>
+
+  <Card title="Webhooks" icon="webhook" href="/es/webhooks">
+    Entrega asíncrona de eventos
+  </Card>
+
+  <Card title="Browser Sandbox" icon="browser" href="/es/features/browser">
+    Sesiones de browser administradas para flujos de trabajo interactivos
+  </Card>
+
+  <Card title="Mapeo" icon="map" href="/es/features/map">
+    Descubre todas las URL de un sitio web
+  </Card>
+
+  <Card title="Crawl" icon="spider-web" href="/es/features/crawl">
+    Recopila contenido de sitios completos de forma recursiva
+  </Card>
+</CardGroup>
+
+***
+
+<div id="resources">
+  ## Recursos
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Referencia de la API" icon="code" href="/es/api-reference/v2-introduction">
+    Documentación completa de la API con ejemplos interactivos
+  </Card>
+
+  <Card title="SDKs" icon="boxes-stacked" href="/es/sdks/overview">
+    SDKs para Python, Node.js, CLI y de la comunidad
+  </Card>
+
+  <Card title="Código abierto" icon="github" href="/es/contributing/open-source-or-cloud">
+    Aloja Firecrawl tú mismo o contribuye al proyecto
+  </Card>
+
+  <Card title="Integraciones" icon="puzzle-piece" href="/es/developer-guides/llm-sdks-and-frameworks/openai">
+    LangChain, LlamaIndex, OpenAI y más
+  </Card>
+</CardGroup>

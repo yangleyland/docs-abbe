@@ -1,0 +1,331 @@
+---
+title: "Limites de taxa"
+description: "Limites de taxa para diferentes planos e solicitações à API"
+og:title: "Limites de taxa | Firecrawl"
+og:description: "Limites de taxa para diferentes planos e solicitações à API"
+---
+
+Os limites de taxa definem quantas solicitações sua equipe pode fazer por minuto, enquanto os limites de concorrência determinam quantos jobs podem ser executados em paralelo. Ambos são definidos pelo seu plano; exceder qualquer um deles retorna uma resposta `429`. Consulte [Erros](/pt-BR/api-reference/errors) para ver o catálogo completo de erros e um snippet de repetição com backoff.
+
+<div id="billing-model">
+  ## Modelo de cobrança
+</div>
+
+Firecrawl usa planos mensais por assinatura. Não há um modelo exclusivamente pay-as-you-go, mas o **recurso de recarga automática** oferece escala flexível. Após assinar um plano, você pode comprar créditos adicionais automaticamente quando ficar abaixo de um limite predefinido. Pacotes maiores de recarga automática oferecem preços melhores. Para testar antes de assumir um plano maior, comece pelo plano Free ou Hobby.
+
+Downgrades de plano entram em vigor na próxima renovação. Não são concedidos créditos proporcionais pelo tempo não utilizado.
+
+<div id="concurrent-browser-limits">
+  ## Limites de navegadores concorrentes
+</div>
+
+“Navegadores concorrentes” controlam quantas páginas o Firecrawl pode processar para você em paralelo. Seu plano define o limite; quaisquer jobs além dele aguardam em uma fila até que um navegador fique disponível.
+
+O tempo gasto na fila é contabilizado no parâmetro [`timeout`](/pt-BR/advanced-scraping-guide#timing-and-cache) da requisição, portanto você pode definir um timeout menor para falhar mais rápido em vez de esperar. Para ver a disponibilidade atual antes de enviar trabalho, chame o endpoint [Queue Status](/pt-BR/api-reference/endpoint/queue-status). Jobs que estiverem aguardando na sua fila de concorrência expirarão em no máximo 48 horas.
+
+<div id="current-plans">
+  ### Planos atuais
+</div>
+
+<div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Plano</th>
+        <th style={{ padding: '8px 12px' }}>Concurrent Browsers</th>
+        <th style={{ padding: '8px 12px' }}>Máximo de jobs na fila</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Free</td>
+        <td style={{ padding: '8px 12px' }}>2</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Hobby</td>
+        <td style={{ padding: '8px 12px' }}>5</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Standard</td>
+        <td style={{ padding: '8px 12px' }}>50</td>
+        <td style={{ padding: '8px 12px' }}>100,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Growth</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>200,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Scale / Enterprise</td>
+        <td style={{ padding: '8px 12px' }}>150+</td>
+        <td style={{ padding: '8px 12px' }}>300,000+</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Cada equipe tem um número máximo de jobs que podem ficar aguardando na fila de concorrência. Se você exceder esse limite, novos jobs serão rejeitados com o código de status `429` até que os jobs existentes sejam concluídos. Para planos maiores com limites de concorrência personalizados, o máximo de jobs na fila é 2.000 vezes o seu limite de concorrência, com teto de 2.000.000.
+
+Se você precisar de limites de concorrência mais altos, [entre em contato conosco sobre os planos Enterprise](https://firecrawl.dev/enterprise).
+
+<div id="extract-plans-legacy">
+  ### Planos de extração (legado)
+</div>
+
+<div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Plano</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Navegadores concorrentes</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Máximo de jobs na fila</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Free</td>
+        <td style={{ padding: '8px 12px' }}>2</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Starter</td>
+        <td style={{ padding: '8px 12px' }}>50</td>
+        <td style={{ padding: '8px 12px' }}>100,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Explorer</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>200,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Pro</td>
+        <td style={{ padding: '8px 12px' }}>200</td>
+        <td style={{ padding: '8px 12px' }}>400,000</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="api-rate-limits">
+  ## Limites de Taxa da API
+</div>
+
+Os limites de taxa são medidos em solicitações por minuto e existem principalmente para prevenir abusos. Quando tudo estiver configurado corretamente, o seu verdadeiro gargalo será o número de navegadores concorrentes. Os limites de taxa são aplicados por equipe, então todas as chaves de API da mesma equipe compartilham os mesmos contadores de limite de taxa.
+
+<div id="current-plans">
+  ### Planos atuais
+</div>
+
+<div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Plano</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/scrape</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/map</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/crawl</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/search</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/agent</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/crawl/status</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/agent/status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Gratuito</td>
+        <td style={{ padding: '8px 12px' }}>10</td>
+        <td style={{ padding: '8px 12px' }}>10</td>
+        <td style={{ padding: '8px 12px' }}>1</td>
+        <td style={{ padding: '8px 12px' }}>5</td>
+        <td style={{ padding: '8px 12px' }}>10</td>
+        <td style={{ padding: '8px 12px' }}>1500</td>
+        <td style={{ padding: '8px 12px' }}>500</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Hobby</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>15</td>
+        <td style={{ padding: '8px 12px' }}>50</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>1500</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Padrão</td>
+        <td style={{ padding: '8px 12px' }}>500</td>
+        <td style={{ padding: '8px 12px' }}>500</td>
+        <td style={{ padding: '8px 12px' }}>50</td>
+        <td style={{ padding: '8px 12px' }}>250</td>
+        <td style={{ padding: '8px 12px' }}>500</td>
+        <td style={{ padding: '8px 12px' }}>1500</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Crescimento</td>
+        <td style={{ padding: '8px 12px' }}>5000</td>
+        <td style={{ padding: '8px 12px' }}>5000</td>
+        <td style={{ padding: '8px 12px' }}>250</td>
+        <td style={{ padding: '8px 12px' }}>2500</td>
+        <td style={{ padding: '8px 12px' }}>1000</td>
+        <td style={{ padding: '8px 12px' }}>1500</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Escala</td>
+        <td style={{ padding: '8px 12px' }}>7500</td>
+        <td style={{ padding: '8px 12px' }}>7500</td>
+        <td style={{ padding: '8px 12px' }}>750</td>
+        <td style={{ padding: '8px 12px' }}>7500</td>
+        <td style={{ padding: '8px 12px' }}>1000</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Esses limites de uso são aplicados para garantir o uso justo e a disponibilidade da API para todos os usuários. Se você precisar de limites mais altos, entre em contato conosco pelo e-mail [help@firecrawl.com](mailto:help@firecrawl.com) para discutir planos personalizados.
+
+<div id="extract-endpoints">
+  ### Endpoints de extração
+</div>
+
+Os endpoints de extração compartilham os mesmos rate limits dos endpoints /agent correspondentes.
+
+<div id="batch-scrape-endpoints">
+  ### Endpoints de Batch Scrape
+</div>
+
+Os endpoints de batch scrape compartilham os mesmos limites de taxa dos endpoints /crawl correspondentes.
+
+<div id="browser-sandbox">
+  ### Sandbox do navegador
+</div>
+
+Os endpoints do sandbox do navegador têm limites de taxa por plano, que variam de acordo com a sua assinatura:
+
+<div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Plano</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/browser</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/browser/&#123;id&#125;/execute</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Free</td>
+        <td style={{ padding: '8px 12px' }}>2</td>
+        <td style={{ padding: '8px 12px' }}>10</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Hobby</td>
+        <td style={{ padding: '8px 12px' }}>20</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Standard</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>500</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Growth</td>
+        <td style={{ padding: '8px 12px' }}>1,000</td>
+        <td style={{ padding: '8px 12px' }}>5,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Scale</td>
+        <td style={{ padding: '8px 12px' }}>1,500</td>
+        <td style={{ padding: '8px 12px' }}>7,500</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Além disso, o plano de cada equipe determina quantas sessões de navegador podem permanecer ativas ao mesmo tempo (consulte Limites simultâneos do navegador acima). Se você exceder esse limite, novas solicitações de sessão retornarão um código de status `429` até que as sessões existentes sejam encerradas.
+
+<div id="fire-1-agent">
+  ### Agente FIRE-1
+</div>
+
+Solicitações que envolvem o agente FIRE-1 têm limites de uso separados, contabilizados de forma independente para cada endpoint:
+
+<div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Endpoint</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Limite de uso (requisições/min)</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style={{ padding: '8px 12px' }}>/scrape</td>
+        <td style={{ padding: '8px 12px' }}>10</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>/extract</td>
+        <td style={{ padding: '8px 12px' }}>10</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### Planos do Extract (legado)
+
+<div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <thead>
+      <tr>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Plano</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/extract (requisições/min)</th>
+        <th style={{ padding: '8px 12px', textAlign: 'left' }}>/extract/status (requisições/min)</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Starter</td>
+        <td style={{ padding: '8px 12px' }}>100</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Explorer</td>
+        <td style={{ padding: '8px 12px' }}>500</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Pro</td>
+        <td style={{ padding: '8px 12px' }}>1000</td>
+        <td style={{ padding: '8px 12px' }}>25000</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

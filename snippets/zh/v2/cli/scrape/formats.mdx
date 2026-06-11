@@ -1,0 +1,18 @@
+```bash CLI
+# 获取 HTML 输出
+firecrawl https://example.com --html
+
+# 多种格式（返回 JSON）
+firecrawl https://example.com --format markdown,links
+
+# 从页面获取图片
+firecrawl https://example.com --format images
+
+# 获取页面内容摘要
+firecrawl https://example.com --format summary
+
+# 跟踪页面变化
+firecrawl https://example.com --format changeTracking
+
+# 可用格式：markdown, html, rawHtml, links, screenshot, json, images, summary, changeTracking, attributes, branding
+```

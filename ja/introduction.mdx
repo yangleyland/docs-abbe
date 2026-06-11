@@ -1,0 +1,208 @@
+---
+title: はじめに
+description: "ウェブを検索し、あらゆるページをスクレイピングして操作できます — すべてを1つのAPIで。"
+og:title: "はじめに | Firecrawl"
+og:description: "ウェブを検索し、あらゆるページをスクレイピングして操作できます — すべてを1つのAPIで。"
+---
+
+<Note>
+  **AIエージェント向け:** すべてのドキュメントの完全なインデックスについては、[llms.txt](/ja/llms.txt)を参照してください。
+</Note>
+
+import SearchPython from "/snippets/ja/v2/search/base/python.mdx";
+import SearchNode from "/snippets/ja/v2/search/base/js.mdx";
+import SearchCURL from "/snippets/ja/v2/search/base/curl.mdx";
+import SearchCLI from "/snippets/ja/v2/search/base/cli.mdx";
+import SearchResponse from "/snippets/ja/v2/search/base/output.mdx";
+import ScrapePython from "/snippets/ja/v2/scrape/base/python.mdx";
+import ScrapeNode from "/snippets/ja/v2/scrape/base/js.mdx";
+import ScrapeCURL from "/snippets/ja/v2/scrape/base/curl.mdx";
+import ScrapeCLI from "/snippets/ja/v2/scrape/base/cli.mdx";
+import ScrapeResponse from "/snippets/ja/v2/scrape/base/output.mdx";
+import InteractPython from "/snippets/ja/v2/interact/quickstart/python.mdx";
+import InteractNode from "/snippets/ja/v2/interact/quickstart/js.mdx";
+import InteractCURL from "/snippets/ja/v2/interact/quickstart/curl.mdx";
+import InteractCLI from "/snippets/ja/v2/interact/quickstart/cli.mdx";
+import InteractResponse from "/snippets/ja/v2/interact/response/output.mdx";
+
+<div id="get-started">
+  ## はじめに
+</div>
+
+<CardGroup cols={2}>
+  <Card title="API キーを取得" icon="key" href="https://www.firecrawl.dev/app/api-keys">
+    サインアップして、Firecrawl の利用を開始するための API キーを取得しましょう
+  </Card>
+
+  <Card title="Playground で試す" icon="play" href="https://www.firecrawl.dev/playground">
+    コードを書くことなく、その場で API をテストできます
+  </Card>
+</CardGroup>
+
+<div id="use-firecrawl-with-ai-agents-recommended">
+  ### AIエージェントでFirecrawlを使う (推奨)
+</div>
+
+Firecrawlスキルは、エージェントがFirecrawlを見つけて利用できるようにする最速の方法です。これらがない場合、エージェントはFirecrawlが利用可能であることを認識できません。
+
+```bash
+npx -y firecrawl-cli@latest init --all --browser
+```
+
+<Note>
+  スキルのインストール後に、エージェントを再起動してください。セットアップ方法の詳細は [Skills + CLI](/ja/sdks/cli) を参照してください。
+</Note>
+
+または [MCP Server](/ja/mcp-server) を使用して、Firecrawl を Claude、Cursor、Windsurf、VS Code などの AI ツールに直接接続することもできます。
+
+***
+
+<div id="what-can-firecrawl-do">
+  ## Firecrawl でできること
+</div>
+
+<CardGroup cols={3}>
+  <Card title="Search" icon="magnifying-glass" href="#search">
+    ウェブを検索し、結果からページ全体のコンテンツを取得
+  </Card>
+
+  <Card title="スクレイピング" icon="file-lines" href="#scrape">
+    任意の URL から、Markdown、HTML、または構造化 JSON としてコンテンツを抽出
+  </Card>
+
+  <Card title="Interact" icon="hand-pointer" href="#interact">
+    スクレイピングした任意のページで作業を続ける — クリック、フォーム入力、動的コンテンツの抽出
+  </Card>
+</CardGroup>
+
+<div id="why-firecrawl">
+  ### なぜ Firecrawl なのか？
+</div>
+
+* **LLM対応の出力**: クリーンなMarkdown、構造化されたJSON、スクリーンショットなどを出力できます。
+* **複雑なケースにも対応**: プロキシ、アンチボット、JavaScriptレンダリング、動的コンテンツに対応します。
+* **高い信頼性**: 高い稼働率と安定した結果を実現し、本番運用向けに設計されています。
+* **高速**: 数秒で結果を返し、高スループット向けに最適化されています。
+* **MCP Server**: [Model Context Protocol (MCP) ](/ja/mcp-server) を介して、FirecrawlをあらゆるAIツールに接続できます。
+
+***
+
+<div id="search">
+  ## Search
+</div>
+
+1 回の呼び出しでウェブを検索し、結果からページ全体のコンテンツを取得できます。すべてのオプションについては、[Search feature docs](/ja/features/search) を参照してください。
+
+<CodeGroup>
+  <SearchPython />
+
+  <SearchNode />
+
+  <SearchCURL />
+
+  <SearchCLI />
+</CodeGroup>
+
+<Accordion title="Response">
+  SDK は data オブジェクトを直接返します。cURL は完全なペイロードを返します。
+
+  <SearchResponse />
+</Accordion>
+
+<div id="scrape">
+  ## スクレイピング
+</div>
+
+任意の URL をスクレイピングし、そのコンテンツを Markdown、HTML、またはその他の形式で取得できます。すべてのオプションについては、[Scrape feature docs](/ja/features/scrape) を参照してください。
+
+<CodeGroup>
+  <ScrapePython />
+
+  <ScrapeNode />
+
+  <ScrapeCURL />
+
+  <ScrapeCLI />
+</CodeGroup>
+
+<Accordion title="Response">
+  SDK は data オブジェクトを直接返します。cURL は以下に示すとおり、ペイロードをそのまま返します。
+
+  <ScrapeResponse />
+</Accordion>
+
+<div id="interact">
+  ## Interact
+</div>
+
+ページをスクレイピングした後も、そのまま操作を続けられます。ボタンのクリック、フォームへの入力、動的コンテンツの抽出、さらに深い階層への移動が可能です。やりたいことを平易な英語で指定することも、完全に制御するためのコードを書くこともできます。すべてのオプションについては、[Interact 機能のドキュメント](/ja/features/interact)を参照してください。
+
+<CodeGroup>
+  <InteractPython />
+
+  <InteractNode />
+
+  <InteractCURL />
+
+  <InteractCLI />
+</CodeGroup>
+
+<Accordion title="レスポンス">
+  <InteractResponse />
+</Accordion>
+
+***
+
+<div id="more-capabilities">
+  ## その他の機能
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/ja/features/agent">
+    AI を活用した自律的な Web データ収集
+  </Card>
+
+  <Card title="Interact" icon="hand-pointer" href="/ja/features/interact">
+    クリック、フォーム入力、動的コンテンツを抽出
+  </Card>
+
+  <Card title="webhook" icon="webhook" href="/ja/webhooks">
+    非同期イベント配信
+  </Card>
+
+  <Card title="Browser Sandbox" icon="browser" href="/ja/features/browser">
+    インタラクティブなワークフロー向けのマネージドブラウザセッション
+  </Card>
+
+  <Card title="Map" icon="map" href="/ja/features/map">
+    Web サイト上のすべての URL を検出
+  </Card>
+
+  <Card title="クロール" icon="spider-web" href="/ja/features/crawl">
+    サイト全体からコンテンツを再帰的に収集
+  </Card>
+</CardGroup>
+
+***
+
+<div id="resources">
+  ## リソース
+</div>
+
+<CardGroup cols={2}>
+  <Card title="APIリファレンス" icon="code" href="/ja/api-reference/v2-introduction">
+    インタラクティブな実行例付きの詳細なAPIドキュメント
+  </Card>
+
+  <Card title="SDKs" icon="boxes-stacked" href="/ja/sdks/overview">
+    Python、Node.js、CLI、コミュニティ製SDK
+  </Card>
+
+  <Card title="オープンソース" icon="github" href="/ja/contributing/open-source-or-cloud">
+    Firecrawlをセルフホストする、またはプロジェクトに貢献する
+  </Card>
+
+  <Card title="連携" icon="puzzle-piece" href="/ja/developer-guides/llm-sdks-and-frameworks/openai">
+    LangChain、LlamaIndex、OpenAI など
+  </Card>
+</CardGroup>

@@ -1,43 +1,57 @@
-# Mintlify Starter Kit
+# Firecrawl Docs 🔥
 
-Use the starter kit to get your docs deployed and ready to customize.
+Welcome to the Firecrawl documentation repository! This repo contains the source files for [docs.firecrawl.dev](https://docs.firecrawl.dev), powered by [Mintlify](https://mintlify.com/).
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## About Firecrawl
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+Firecrawl is the web context API for AI agents. Search, scrape, parse, and interact with the live web — turn any source into clean Markdown or structured data your agents can ship with.
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+## Getting Started
 
-## Development
+To get started with the Firecrawl documentation, follow the steps below:
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+### Prerequisites
 
-```
-npm i -g mint
-```
+- Node.js LTS (version 19 or higher). **Node 25+ is not supported** by the Mintlify CLI (see [mintlify/starter#116](https://github.com/mintlify/starter/issues/116)). If you're on Node 25+, please use an [LTS version](https://nodejs.org/en/about/previous-releases#looking-for-the-latest-release-of-a-version-branch) of Node.js.
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
 
-```
-mint dev
-```
+### Installation
 
-View your local preview at `http://localhost:3000`.
+1. Install the Mintlify CLI globally:
 
-## Publishing changes
+   ```bash
+   npm i -g mint
+   ```
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+2. Clone this repository and navigate to the directory:
 
-## Need help?
+   ```bash
+   git clone https://github.com/firecrawl/firecrawl-docs.git
+   cd firecrawl-docs
+   ```
 
-### Troubleshooting
+3. Start the Mintlify development server:
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+   ```bash
+   mint dev
+   ```
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+   > Note: the CLI was renamed from `mintlify` to `mint`. The old `mintlify dev` command is deprecated.
+
+4. Open your web browser and visit [http://localhost:3000](http://localhost:3000) to see a local preview of the documentation.
+
+## Contributing
+
+We welcome contributions to improve the Firecrawl documentation! If you find any issues or want to suggest enhancements, please open an issue or submit a pull request to this repository.
+
+When contributing, please follow these guidelines:
+
+- Keep the documentation clear, concise, and easy to understand.
+- Use proper formatting and adhere to the existing document structure.
+- Test your changes locally before submitting a pull request.
+
+## Contact
+
+If you have any questions or need further assistance, please reach out to us at [help@firecrawl.dev](mailto:help@firecrawl.dev).
+
+Happy building with Firecrawl! 🔥
