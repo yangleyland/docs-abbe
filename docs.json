@@ -17,6 +17,20 @@
             "quickstart",
             "catpage"
           ]
+      },
+      {
+        "group": "Users API",
+        "openapi": {
+          "source": "/specs/users.openapi.yaml",
+          "directory": "users-api-reference"
+        }
+      },
+      {
+        "group": "Admin API",
+        "openapi": {
+          "source": "/specs/admin.openapi.yaml",
+          "directory": "admin-api-reference"
+        }
       }
     ],
     "global": {

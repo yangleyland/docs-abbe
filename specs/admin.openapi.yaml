@@ -1,0 +1,46 @@
+openapi: 3.1.0
+info:
+  title: Admin API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/admin
+paths:
+  /audit-logs:
+    get:
+      summary: List audit logs
+      description: Returns recent audit log entries for administrators.
+      operationId: listAuditLogs
+      tags:
+        - Audit Logs
+      responses:
+        "200":
+          description: A list of audit log entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - id
+                        - action
+                      properties:
+                        id:
+                          type: string
+                          example: log_123
+                        action:
+                          type: string
+                          example: user.created
+  /settings:
+    get:
+      summary: Get admin settings
+      description: Returns the current admin settings.
+      operationId: getAdminSettings
+      tags:
+        - Settings
+      responses:
+        "200":
+          description: The current admin settings.
